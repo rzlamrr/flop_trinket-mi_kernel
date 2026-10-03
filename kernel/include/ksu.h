@@ -2,8 +2,8 @@
 #define __KSU_H_KSU
 
 #include <linux/types.h>
-#include <linux/workqueue.h>
 #include <linux/cred.h>
+#include <linux/workqueue.h>
 
 #define KERNEL_SU_VERSION KSU_VERSION
 #define KERNEL_SU_VERSION_TAG KSU_VERSION_TAG

@@ -11,12 +11,9 @@
 #include <linux/sched/task.h>
 #include <linux/slab.h>
 #include <linux/syscalls.h>
+#include <linux/task_work.h>
 #include <linux/version.h>
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 0, 0)
 #include <uapi/linux/mount.h>
-#else
-#include <uapi/linux/fs.h>
-#endif
 
 #include "arch.h"
 #include "klog.h" // IWYU pragma: keep
@@ -122,7 +119,7 @@ out:
 // individual mode , need CAP_SYS_ADMIN to perform unshare and remount
 static void ksu_mnt_ns_individual(void)
 {
-    long ret = ksu_sys_unshare(CLONE_NEWNS);
+    long ret = ksys_unshare(CLONE_NEWNS);
     if (ret) {
         pr_warn("call ksys_unshare failed: %ld\n", ret);
         return;
