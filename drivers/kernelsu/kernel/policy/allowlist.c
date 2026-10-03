@@ -18,7 +18,6 @@
 
 #include "klog.h" // IWYU pragma: keep
 #include "ksu.h"
-#include "compat/kernel_compat.h"
 #include "runtime/ksud_boot.h"
 #include "selinux/selinux.h"
 #include "policy/allowlist.h"
@@ -499,7 +498,7 @@ static void migrate_profile(u32 version, struct app_profile *profile)
                 pr_info("migrated domain of profile: %s\n", profile->key);
             }
         }
-        /* fall through */
+        fallthrough;
     case 3:
         if (profile->allow_su) {
             profile->rp_config.profile.flags = FLAG_KSU_NO_NEW_PRIVS;

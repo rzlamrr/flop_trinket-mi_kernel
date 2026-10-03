@@ -26,7 +26,8 @@ bool __ksu_is_allow_uid(uid_t uid);
 
 // Check if the uid is in allow list, or current is ksu domain root
 bool __ksu_is_allow_uid_for_current(uid_t uid);
-#define ksu_is_allow_uid_for_current(uid) unlikely(__ksu_is_allow_uid_for_current(uid))
+#define ksu_is_allow_uid_for_current(uid)                                      \
+    unlikely(__ksu_is_allow_uid_for_current(uid))
 
 bool ksu_get_allow_list(int *array, u16 length, u16 *out_length, u16 *out_total,
                         bool allow);

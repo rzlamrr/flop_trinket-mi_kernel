@@ -18,7 +18,6 @@
 #include "util.h"
 #include "klog.h" // IWYU pragma: keep
 #include "manager/manager_identity.h"
-#include "compat/kernel_compat.h"
 
 #include "sulog/event.h"
 
@@ -283,44 +282,39 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd,
 #ifdef KSU_KPROBES_HOOK
 static int reboot_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
-	struct pt_regs *real_regs = PT_REAL_REGS(regs);
-	int magic1 = (int)PT_REGS_PARM1(real_regs);
-	int magic2 = (int)PT_REGS_PARM2(real_regs);
-	unsigned int cmd = (unsigned int)PT_REGS_PARM3(real_regs);
-	unsigned long arg4 = (unsigned long)PT_REGS_SYSCALL_PARM4(real_regs);
-	unsigned long reply = (unsigned long)arg4;
+    struct pt_regs *real_regs = PT_REAL_REGS(regs);
+    int magic1 = (int)PT_REGS_SYSCALL_PARM1(real_regs);
+    int magic2 = (int)PT_REGS_PARM2(real_regs);
+    unsigned int cmd = (unsigned int)PT_REGS_PARM3(real_regs);
+    unsigned long arg4 = (unsigned long)PT_REGS_SYSCALL_PARM4(real_regs);
 
-	return ksu_handle_sys_reboot(magic1, magic2, cmd, (void __user **)&arg4);
+    return ksu_handle_sys_reboot(magic1, magic2, cmd, (void __user **)&arg4);
 }
 
 static struct kprobe reboot_kp = {
-	.symbol_name = REBOOT_SYMBOL,
-	.pre_handler = reboot_handler_pre,
+    .symbol_name = REBOOT_SYMBOL,
+    .pre_handler = reboot_handler_pre,
 };
 #endif
 
 void __init ksu_supercalls_init(void)
 {
-	int i;
-
-	ksu_supercall_dump_commands();
+    ksu_supercall_dump_commands();
 
 #ifdef KSU_KPROBES_HOOK
-	int rc = register_kprobe(&reboot_kp);
-	if (rc) {
-		pr_err("reboot kprobe failed: %d\n", rc);
-	} else {
-		pr_info("reboot kprobe registered successfully\n");
-	}
+    int rc = register_kprobe(&reboot_kp);
+    if (rc) {
+        pr_err("reboot kprobe failed: %d\n", rc);
+    } else {
+        pr_info("reboot kprobe registered successfully\n");
+    }
 #endif
 }
 
-void __exit ksu_supercalls_exit(void){
-	struct mount_entry *entry, *tmp;
-
+void __exit ksu_supercalls_exit(void)
+{
 #ifdef KSU_KPROBES_HOOK
-	unregister_kprobe(&reboot_kp);
+    unregister_kprobe(&reboot_kp);
 #endif
-
-	ksu_supercall_cleanup_state();
+    ksu_supercall_cleanup_state();
 }
